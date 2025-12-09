@@ -14,7 +14,28 @@ jobs:
       run: |
         echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-    - name: Build and push image
+    - name: Create timestamp
+      run: echo "TS=$(date +%Y-%m-%d-%H-%M-%S)" >> $GITHUB_ENV
+
+    - name: Build Docker image
       run: |
-        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/python-app:latest .
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/python-app:latest
+        IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/python-app
+        docker build -t $IMAGE:latest .
+
+    - name: Tag image
+      run: |
+        IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/python-app
+
+        # tag z SHA commitu
+        docker tag $IMAGE:latest $IMAGE:${{ github.sha }}
+
+        # tag z timestampem
+        docker tag $IMAGE:latest $IMAGE:${{ env.TS }}
+
+    - name: Push images
+      run: |
+        IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/python-app
+
+        docker push $IMAGE:latest
+        docker push $IMAGE:${{ github.sha }}
+        docker push $IMAGE:${{ env.TS }}
