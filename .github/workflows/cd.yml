@@ -13,4 +13,4 @@ jobs:
     - name: Build and push
       run: |
         docker build -t ghcr.io/przemyslawkubicz/python-app:latest .
-        docker push ghcr.io/przemslawkubicz/python-app:latest
+        docker push ghcr.io/przemyslawkubicz/python-app:latest
